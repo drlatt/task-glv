@@ -1,13 +1,10 @@
 import requests
-from awsauth import S3Auth
-import sys
 import argparse
 import boto3
 import botocore
 import multiprocessing
-import os
 
-from multiprocessing import Pool
+from multiprocessing import Process
 
 
 # create flags to parse command line arguments
@@ -33,8 +30,12 @@ def get_s3_file():
 
     # attempt to download s3 file and output errors if unsuccessful
     try:
+        print("Attempting to download {} \n".format(KEY))
+
         s3.Bucket(BUCKET_NAME).download_file(KEY, '{}'.format(KEY))
-        print("Downloading {}".format(KEY))
+        
+        print("completed download of {} \n".format(KEY))
+
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             print("The object does not exist.")
@@ -48,15 +49,18 @@ def get_http_file():
 
     # attempt to download required file and output errors if unsuccessful
     try:
+        # set stream to True to avoid entire content being loaded into memory all at once
         r = requests.get(http_url, stream = True)
         r.raise_for_status()
-        print("Downloading {}".format(file_name))
+        print("Downloading {} \n".format(file_name))
         with open(file_name, 'wb') as f:
-    
+            # download fixed chunk size in each iteration
             for chunk in r.iter_content(chunk_size=1024*1024):
 
                 if chunk:
                     f.write(chunk)
+        print("completed download of {} \n".format(file_name))
+
     except requests.exceptions.HTTPError as errh:
         print("An HTTP error occured:", errh)
     except requests.exceptions.ConnectionError as errc:
@@ -67,24 +71,18 @@ def get_http_file():
         print ("An error occured",erre)
 
 
-def run_process(process):                                                             
-    process
-
-
-        
-
+      
 if __name__ == '__main__':
-    # number_of_workers = 10
-    # with Pool(number_of_workers) as pool:
-    #     pool.starmap(get_http_file, get_s3_file)
+    
+    # implement multiprocessing so functions run in parallel
+    p1 = Process(target=get_http_file)
+    p1.start()
+    p2 = Process(target=get_s3_file)
+    p2.start()
+    p1.join()
+    p2.join()
 
-    processes = (get_http_file, get_s3_file)
-    pool = Pool(processes=10)
-    pool.map(run_process, processes)
 
-
-    # get_s3_file()    
-    # # get_http_file()
     
 
 
