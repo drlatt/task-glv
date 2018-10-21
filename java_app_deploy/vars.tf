@@ -10,17 +10,17 @@ variable "aws_region" {
   default = "eu-west-1"
 }
 
-variable "aws_subnet_id" {
-  default = "subnet-da9b2abc"
-}
+# variable "aws_subnet_id" {
+#   default = ["subnet-da9b2abc"]
+# }
 
 variable "amis" {
   type = "map"
 
   default = {
-    us-east-1 = "ami-062c7aabe0926d9cf"
-    us-west-2 = "ami-0149a1175a368846c"
-    eu-west-1 = "ami-045a58975c6b7ef82"
+    us-east-1 = "ami-0735ea082a1534cac"
+    us-west-2 = "ami-01e0cf6e025c036e4"
+    eu-west-1 = "ami-00b36349b3dba2ec3"
   }
 }
 

@@ -1,6 +1,5 @@
 resource "aws_elb" "javaapp" {
   name                      = "javaapp"
-#   availability_zones        = ["eu-west-1"]
   cross_zone_load_balancing = true
   subnets = ["${aws_subnet.subnet-1.id}", "${aws_subnet.subnet-2.id}"]
   security_groups = ["${aws_security_group.secgroup-elb.id}"]
@@ -25,23 +24,10 @@ resource "aws_elb" "javaapp" {
     },
   ]
 
-#   instances = ["${aws_instance.web.*.id}"]
+
 
   tags = {
       Name = "javaapp"
   }
 }
 
-
-
-# resource "aws_instance" "web" {
-
-#     name = "web${count.index + 1}" #yields web1, web2
-#     count = 2
-
-#     ami             = "${lookup(var.amis, var.aws_region)}"
-#     instance_type   = "t2.micro"
-#     subnet_id       = "${var.aws_subnet_id}"
-#     key_name        = "${var.key_name}"
-#     security_groups = "${var.sec_group}"
-# }
