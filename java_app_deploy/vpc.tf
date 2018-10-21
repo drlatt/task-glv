@@ -8,7 +8,7 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-
+# create internet gateway
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.main_vpc.id}"
 
@@ -36,8 +36,74 @@ resource "aws_subnet" "subnet-2" {
   }
 }
 
+# add default route to routing table
 resource "aws_route" "default_route" {
   route_table_id         = "${aws_vpc.main_vpc.default_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = "${aws_internet_gateway.gw.id}"
+}
+
+# create security groups
+resource "aws_security_group" "secgroup-app" {
+  name        = "secgroup-app"
+  description = "Allow access to app ports"
+  vpc_id = "${aws_vpc.main_vpc.id}"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+ 
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+
+  tags {
+    Name = "secgroup-app"
+  }
+}
+
+resource "aws_security_group" "secgroup-ssh" {
+  name        = "secgroup-ssh"
+  description = "Allow ssh access to my IP"
+  vpc_id = "${aws_vpc.main_vpc.id}"
+
+  # allow my IP access to port 22
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["41.58.250.171/32"]
+  }
+
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+
+  tags {
+    Name = "secgroup-ssh"
+  }
 }
