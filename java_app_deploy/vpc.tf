@@ -46,28 +46,17 @@ resource "aws_route" "default_route" {
 # create security groups
 resource "aws_security_group" "secgroup-app" {
   name        = "secgroup-app"
-  description = "Allow access to app ports"
+  description = "Allow access to app port"
   vpc_id = "${aws_vpc.main_vpc.id}"
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    
   }
 
  
@@ -105,5 +94,31 @@ resource "aws_security_group" "secgroup-ssh" {
 
   tags {
     Name = "secgroup-ssh"
+  }
+}
+
+# create ELB security group
+resource "aws_security_group" "secgroup-elb" {
+  name        = "secgroup-elb"
+  description = "Allow access to port 443 on ELB"
+  vpc_id = "${aws_vpc.main_vpc.id}"
+
+  # allow my IP access to port 22
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+
+  tags {
+    Name = "secgroup-elb"
   }
 }
