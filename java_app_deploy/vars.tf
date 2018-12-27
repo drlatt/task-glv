@@ -10,9 +10,6 @@ variable "aws_region" {
   default = "eu-west-1"
 }
 
-# variable "aws_subnet_id" {
-#   default = ["subnet-da9b2abc"]
-# }
 
 variable "amis" {
   type = "map"
@@ -28,10 +25,6 @@ variable "key_name" {
   default = "lat_aws"
 }
 
-variable "sec_group" {
-  type    = "list"
-  default = ["sg-5fa3ce22"]
-}
 
 variable "ssh_key_file" {
   default = ""
